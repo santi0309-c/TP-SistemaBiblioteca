@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mi Perfil · Grupo de Oración</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* NAV BAR ESTÁNDAR */
+.nav-bar{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 20px 24px;gap:12px;flex-wrap:wrap}
+.nav-user{display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:14px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:rgba(124,159,255,0.15);border:1px solid rgba(124,159,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--accent);overflow:hidden}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:50px;background:rgba(124,159,255,0.08);border:1px solid rgba(124,159,255,0.15);color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;cursor:pointer}
+.nav-link:hover{background:rgba(124,159,255,0.18)}
+.nav-link.active{background:rgba(124,159,255,0.2);border-color:rgba(124,159,255,0.4)}
+
+.content{max-width:680px;margin:auto;padding:40px 20px 80px;position:relative;z-index:1}
+
+/* AVATAR GRANDE */
+.avatar-section{text-align:center;margin-bottom:32px}
+.avatar-wrap{position:relative;display:inline-block}
+.avatar-grande{width:110px;height:110px;border-radius:50%;background:#1a2235;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:600;color:rgba(255,255,255,0.85);overflow:hidden;margin:0 auto 16px;box-shadow:6px 6px 14px rgba(0,0,0,0.5),-4px -4px 10px rgba(255,255,255,0.04),inset 2px 2px 5px rgba(255,255,255,0.05),inset -3px -3px 7px rgba(0,0,0,0.4)}
+.avatar-grande img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.avatar-edit-btn{position:absolute;bottom:18px;right:-2px;width:32px;height:32px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all 0.2s}
+.avatar-edit-btn:hover{background:var(--accent2)}
+#fotoInput{display:none}
+.avatar-hint{font-size:13px;color:var(--text-muted)}
+.upload-progress{font-size:13px;color:var(--accent);margin-top:8px;display:none}
+
+/* CARDS DE SECCIÓN */
+.seccion{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:16px;position:relative;overflow:hidden}
+.seccion::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.sec-titulo{font-family:'Lora',serif;font-size:18px;font-weight:600;margin-bottom:20px}
+
+/* CAMPO */
+.campo{margin-bottom:18px}
+.campo label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:8px}
+.campo input{width:100%;padding:14px 18px;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-size:16px;font-family:'DM Sans',sans-serif;outline:none;transition:all 0.25s;min-height:50px}
+.campo input:focus{border-color:var(--accent);background:rgba(124,159,255,0.08)}
+.campo input:disabled{opacity:0.4;cursor:not-allowed}
+
+.btn-guardar{width:100%;padding:15px;border-radius:50px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.25s;min-height:52px}
+.btn-guardar:hover{opacity:0.9}
+.btn-guardar:active{transform:scale(0.98)}
+.btn-guardar:disabled{opacity:0.5;cursor:not-allowed}
+
+.msg{font-size:14px;text-align:center;margin-top:12px;display:none}
+.msg.ok{color:var(--success)}
+.msg.error{color:#ff6464}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MOTIVOS */
+.motivo-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:8px;transition:border-color 0.2s;animation:fadeUp 0.3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.motivo-item:hover{border-color:var(--border-hover)}
+.motivo-item.respondido .motivo-texto{text-decoration:line-through;opacity:0.4}
+.motivo-texto{font-size:15px;line-height:1.5;margin-bottom:10px}
+.motivo-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.accion-btn{padding:4px 12px;border-radius:50px;font-size:12px;font-weight:500;background:transparent;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.accion-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.accion-btn.danger:hover{border-color:rgba(255,100,100,0.3);color:#ff6464}
+.select-estado-edit{padding:4px 10px;border-radius:50px;border:1px solid rgba(124,159,255,0.25);background:#111827;color:#e8eaf0;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;padding-right:22px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237c9fff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.select-estado-edit option{background:#111827;color:#e8eaf0}
+.testimonio-section{margin-top:10px;padding:10px 14px;background:rgba(78,204,163,0.07);border:1px solid rgba(78,204,163,0.2);border-radius:12px;animation:fadeUp 0.3s ease}
+.testimonio-section label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--success);display:block;margin-bottom:6px}
+.testimonio-section textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(78,204,163,0.2);background:rgba(255,255,255,0.04);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:64px;transition:border-color 0.2s;box-sizing:border-box}
+.testimonio-section textarea:focus{border-color:var(--success)}
+.testimonio-section .btn-testimonio{margin-top:8px;padding:7px 18px;border-radius:50px;border:none;background:linear-gradient(90deg,var(--success),#3bc49a);color:#0a1628;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s}
+.testimonio-section .btn-testimonio:hover{opacity:0.9}
+.testimonio-mostrado{margin-top:10px;padding:10px 14px;background:rgba(78,204,163,0.06);border:1px solid rgba(78,204,163,0.15);border-radius:12px;font-size:13px;color:var(--text-muted);line-height:1.5;font-style:italic}
+.testimonio-mostrado::before{content:'🙌 ';font-style:normal}
+.nuevo-motivo-form{background:rgba(124,159,255,0.05);border:1px dashed rgba(124,159,255,0.2);border-radius:var(--radius-sm);padding:16px;margin-bottom:8px;display:none}
+.nuevo-motivo-form textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:72px;transition:all 0.25s}
+.nuevo-motivo-form textarea:focus{border-color:var(--accent)}
+.form-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.select-estado-nuevo{padding:8px 12px;border-radius:50px;border:1px solid rgba(124,159,255,0.25);background:#111827;color:#e8eaf0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237c9fff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C%2Fsvg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.select-estado-nuevo option{background:#111827;color:#e8eaf0}
+.check-privado{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer}
+.btn-mini{padding:8px 18px;border-radius:50px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s;margin-left:auto}
+.btn-mini:hover{opacity:0.9}
+.btn-agregar-m{width:100%;padding:12px;border-radius:50px;border:1px dashed rgba(124,159,255,0.25);background:transparent;color:var(--accent);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.25s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-agregar-m:hover{background:rgba(124,159,255,0.06);border-color:rgba(124,159,255,0.4)}
+.empty-motivos{text-align:center;padding:20px;color:var(--text-muted);font-size:14px}
+.subsec-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin:16px 0 8px;display:block}
+</style>
+</head>
+<body>
+<div class="content">
+
+  <!-- NAV BAR ESTÁNDAR -->
+  <div class="nav-bar">
+    <div class="nav-user">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <span id="navNombre">Cargando...</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="home.html">🏠 Home</a>
+      <a class="nav-link" href="personas.html">👥 Miembros</a>
+      <a class="nav-link" id="navTodos" href="todos.html" style="display:none">🙏 Todos</a>
+      <a class="nav-link" href="seguimiento.html">📅 Seguimiento</a>
+      <a class="nav-link active" href="mi-perfil.html">👤 Mi perfil</a>
+      <a class="nav-link" onclick="cerrarSesion()">Salir</a>
+    </div>
+  </div>
+
+  <!-- AVATAR -->
+  <div class="avatar-section">
+    <div class="avatar-wrap">
+      <div class="avatar-grande" id="avatarGrande"></div>
+      <div class="avatar-edit-btn" onclick="document.getElementById('fotoInput').click()" title="Cambiar foto">📷</div>
+    </div>
+    <input type="file" id="fotoInput" accept="image/jpeg,image/png,image/webp" onchange="handleFoto(this)">
+    <div class="avatar-hint">Tocá el ícono para cambiar tu foto</div>
+    <div class="upload-progress" id="uploadProgress">Subiendo foto...</div>
+  </div>
+
+  <!-- EDITAR NOMBRE -->
+  <div class="seccion">
+    <div class="sec-titulo">Mis datos</div>
+    <div class="campo">
+      <label>Email</label>
+      <input type="email" id="emailField" disabled>
+    </div>
+    <div class="campo">
+      <label>Nombre</label>
+      <input type="text" id="nombreField" placeholder="Tu nombre" autocomplete="off">
+    </div>
+    <button class="btn-guardar" id="btnNombre" onclick="guardarNombre()">Guardar nombre</button>
+    <p class="msg" id="msgNombre"></p>
+  </div>
+
+  <!-- CAMBIAR CONTRASEÑA -->
+  <div class="seccion">
+    <div class="sec-titulo">Cambiar contraseña</div>
+    <div class="campo">
+      <label>Contraseña actual</label>
+      <input type="password" id="passActual" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="campo">
+      <label>Nueva contraseña</label>
+      <input type="password" id="passNueva" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+    </div>
+    <div class="campo">
+      <label>Repetir nueva contraseña</label>
+      <input type="password" id="passRepetir" placeholder="Repetí la nueva contraseña" autocomplete="new-password">
+    </div>
+    <button class="btn-guardar" id="btnPass" onclick="cambiarPassword()">Cambiar contraseña</button>
+    <p class="msg" id="msgPass"></p>
+  </div>
+
+  <!-- MIS MOTIVOS -->
+  <div class="seccion" id="seccionMotivos">
+    <div class="sec-titulo">Mis motivos de oración</div>
+
+    <div id="listaMotivos"><div class="empty-motivos">Cargando...</div></div>
+
+    <div class="nuevo-motivo-form" id="nuevoMotivoForm">
+      <textarea id="nuevoTexto" placeholder="Escribí el motivo de oración..."></textarea>
+      <div class="form-footer">
+        <select class="select-estado-nuevo" id="nuevoEstado">
+          <option value="oracion">En oración</option>
+          <option value="activo">Activo</option>
+          <option value="constante">Constante</option>
+        </select>
+        <label class="check-privado">
+          <input type="checkbox" id="nuevoPrivado"> Privado
+        </label>
+        <button class="btn-mini" onclick="guardarMotivo()">Guardar</button>
+      </div>
+    </div>
+
+    <button class="btn-agregar-m" id="btnAgregarMotivo" onclick="toggleNuevoMotivo()" style="display:none">
+      + Agregar motivo
+    </button>
+    <p class="msg" id="msgMotivos"></p>
+  </div>
+
+</div>
+
+<script src="api.js"></script>
+<script>
+requireAuth();
+
+function showModal({ icon = "", title = "", msg = "", input = false, inputVal = "", confirmLabel = "Confirmar", confirmDanger = false }) {
+  return new Promise(resolve => {
+    document.getElementById("modalIcon").textContent = icon;
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalMsg").textContent = msg;
+    const inp = document.getElementById("modalInput");
+    if (input) {
+      inp.style.display = "block";
+      inp.value = inputVal;
+      setTimeout(() => { inp.focus(); inp.select(); }, 60);
+    } else {
+      inp.style.display = "none";
+    }
+    const btnConfirm = document.getElementById("modalConfirm");
+    btnConfirm.textContent = confirmLabel;
+    btnConfirm.style.background = confirmDanger
+      ? "linear-gradient(90deg,#ff6464,#ff4040)"
+      : "linear-gradient(90deg,#7c9fff,#b98fff)";
+
+    const modal = document.getElementById("customModal");
+    modal.style.display = "flex";
+
+    const onConfirm = () => {
+      modal.style.display = "none";
+      cleanup();
+      resolve(input ? inp.value : true);
+    };
+    const onCancel = () => {
+      modal.style.display = "none";
+      cleanup();
+      resolve(input ? null : false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") onCancel();
+      if (e.key === "Enter" && !input) onConfirm();
+    };
+    function cleanup() {
+      btnConfirm.removeEventListener("click", onConfirm);
+      document.getElementById("modalCancel").removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+    }
+    btnConfirm.addEventListener("click", onConfirm);
+    document.getElementById("modalCancel").addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+// Cargar datos del perfil
+(async () => {
+  const usuario = getUsuario();
+  if (usuario) {
+    const av = document.getElementById("navAvatar");
+    if (usuario.foto_url) {
+      av.innerHTML = `<img src="${usuario.foto_url}" alt="${usuario.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      av.textContent = usuario.nombre.charAt(0).toUpperCase();
+    }
+    document.getElementById("navNombre").textContent = usuario.nombre;
+  }
+
+  try {
+    const perfil = await usuarioApi.perfil();
+    document.getElementById("emailField").value  = perfil.email;
+    document.getElementById("nombreField").value = perfil.nombre;
+    renderAvatar(perfil.nombre, perfil.foto_url);
+  } catch (e) {
+    mostrar("msgNombre", "Error al cargar perfil: " + e.message, "error");
+  }
+})();
+
+function renderAvatar(nombre, fotoUrl) {
+  const av = document.getElementById("avatarGrande");
+  if (fotoUrl) {
+    av.innerHTML = `<img src="${fotoUrl}" alt="${nombre}" onerror="this.parentElement.textContent='${nombre.charAt(0)}'">`;
+  } else {
+    av.textContent = nombre ? nombre.charAt(0).toUpperCase() : "?";
+  }
+}
+
+async function guardarNombre() {
+  const nombre = document.getElementById("nombreField").value.trim();
+  if (!nombre) { mostrar("msgNombre", "El nombre no puede estar vacío", "error"); return; }
+  const btn = document.getElementById("btnNombre");
+  btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  btn.disabled = true;
+  try {
+    const perfil = await usuarioApi.editarPerfil({ nombre });
+    actualizarUsuarioLocal({ nombre: perfil.nombre });
+    renderAvatar(perfil.nombre, perfil.foto_url);
+    mostrar("msgNombre", "¡Nombre actualizado!", "ok");
+  } catch (e) {
+    mostrar("msgNombre", e.message, "error");
+  } finally {
+    btn.innerHTML = "Guardar nombre";
+    btn.disabled = false;
+  }
+}
+
+async function cambiarPassword() {
+  const actual   = document.getElementById("passActual").value;
+  const nueva    = document.getElementById("passNueva").value;
+  const repetir  = document.getElementById("passRepetir").value;
+
+  if (!actual || !nueva || !repetir) { mostrar("msgPass", "Completá todos los campos", "error"); return; }
+  if (nueva.length < 8)              { mostrar("msgPass", "La nueva contraseña debe tener al menos 8 caracteres", "error"); return; }
+  if (nueva !== repetir)             { mostrar("msgPass", "Las contraseñas nuevas no coinciden", "error"); return; }
+
+  const btn = document.getElementById("btnPass");
+  btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  btn.disabled = true;
+  try {
+    await usuarioApi.cambiarPassword(actual, nueva);
+    mostrar("msgPass", "¡Contraseña cambiada! Próximo login usá la nueva.", "ok");
+    document.getElementById("passActual").value  = "";
+    document.getElementById("passNueva").value   = "";
+    document.getElementById("passRepetir").value = "";
+  } catch (e) {
+    mostrar("msgPass", e.message, "error");
+  } finally {
+    btn.innerHTML = "Cambiar contraseña";
+    btn.disabled = false;
+  }
+}
+
+async function handleFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert("La imagen no puede superar 2MB"); return; }
+
+  const progress = document.getElementById("uploadProgress");
+  progress.style.display = "block";
+  try {
+    const url = await subirFotoPerfil(file);
+    const nombre = document.getElementById("nombreField").value;
+    renderAvatar(nombre, url);
+    mostrar("msgNombre", "¡Foto actualizada!", "ok");
+  } catch (e) {
+    alert("Error al subir la foto: " + e.message);
+  } finally {
+    progress.style.display = "none";
+    input.value = "";
+  }
+}
+
+function mostrar(id, texto, tipo) {
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = "msg " + tipo;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 4000);
+}
+
+/* ---- MOTIVOS PROPIOS ---- */
+const badgeLabel = { oracion:"En oración", constante:"Constante", activo:"Activo", respondido:"Respondido ✓" };
+let personaSeleccionada = null;
+let misMotivosCargados = [];
+let mostrandoNuevo = false;
+
+async function iniciarMotivos() {
+  try {
+    const usuario = getUsuario();
+    if (!usuario) return;
+    const lista = await personas.listar();
+    const miPersona = lista.find(p =>
+      p.nombre.toLowerCase().trim() === usuario.nombre.toLowerCase().trim()
+    );
+    if (!miPersona) {
+      document.getElementById("listaMotivos").innerHTML =
+        '<div class="empty-motivos">No encontramos tu nombre en la lista del grupo. Pedile al admin que te agregue.</div>';
+      return;
+    }
+    personaSeleccionada = miPersona.id;
+    document.getElementById("btnAgregarMotivo").style.display = "flex";
+    await cargarMotivos();
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+async function cargarMotivos() {
+  if (!personaSeleccionada) return;
+  try {
+    misMotivosCargados = await motivos.listar(personaSeleccionada);
+    renderMisMotivos();
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+function renderMisMotivos() {
+  const cont = document.getElementById("listaMotivos");
+
+  if (!misMotivosCargados.length) {
+    cont.innerHTML = '<div class="empty-motivos">🕊️ Todavía no tenés motivos cargados</div>';
+    return;
+  }
+
+  const grupos = [
+    { label: "Activos", items: misMotivosCargados.filter(m => m.estado === "oracion" || m.estado === "activo") },
+    { label: "Constantes", items: misMotivosCargados.filter(m => m.estado === "constante") },
+    { label: "Respondidos", items: misMotivosCargados.filter(m => m.estado === "respondido") },
+  ].filter(g => g.items.length);
+
+  cont.innerHTML = grupos.map(g => `
+    <span class="subsec-label">${g.label}</span>
+    ${g.items.map((m, i) => `
+      <div class="motivo-item ${m.estado === 'respondido' ? 'respondido' : ''}" id="mitem-${m.id}" style="animation-delay:${i*0.05}s">
+        <div class="motivo-texto" id="mtexto-${m.id}">${m.texto}</div>
+        <div class="motivo-footer">
+          <span class="badge ${m.estado}">${badgeLabel[m.estado]||m.estado}</span>
+          ${m.es_privado ? '<span class="badge" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--text-muted)">🔒</span>' : ''}
+          <select class="select-estado-edit" onchange="cambiarEstado('${m.id}', this.value, this)">
+            <option value="oracion" ${m.estado==='oracion'?'selected':''}>En oración</option>
+            <option value="activo" ${m.estado==='activo'?'selected':''}>Activo</option>
+            <option value="constante" ${m.estado==='constante'?'selected':''}>Constante</option>
+            <option value="respondido" ${m.estado==='respondido'?'selected':''}>Respondido ✓</option>
+          </select>
+          <button class="accion-btn" onclick="editarTexto('${m.id}')">Editar</button>
+          <button class="accion-btn danger" onclick="eliminarMotivo('${m.id}')">✕</button>
+        </div>
+        ${m.estado === 'respondido' && m.testimonio
+          ? `<div class="testimonio-mostrado">${m.testimonio}</div>`
+          : m.estado === 'respondido' && !m.testimonio
+          ? `<div class="testimonio-section" id="tsec-${m.id}">
+               <label>🙌 ¿Cómo respondió Dios? Compartí el testimonio</label>
+               <textarea id="ttext-${m.id}" placeholder="Contá brevemente cómo Dios respondió este motivo..."></textarea>
+               <button class="btn-testimonio" onclick="guardarTestimonio('${m.id}')">Guardar testimonio</button>
+             </div>`
+          : ''
+        }
+      </div>
+    `).join("")}
+  `).join("");
+}
+
+async function cambiarEstado(id, nuevoEstado, selectEl) {
+  try {
+    await motivos.editar(id, { estado: nuevoEstado });
+    await cargarMotivos();
+    // Si se marcó como respondido y no hay testimonio, hacer scroll al campo
+    if (nuevoEstado === 'respondido') {
+      setTimeout(() => {
+        const tsec = document.getElementById('tsec-' + id);
+        if (tsec) {
+          tsec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          const ta = document.getElementById('ttext-' + id);
+          if (ta) ta.focus();
+        }
+      }, 100);
+    }
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+async function guardarTestimonio(id) {
+  const ta = document.getElementById('ttext-' + id);
+  const testimonio = ta ? ta.value.trim() : '';
+  if (!testimonio) { mostrar("msgMotivos", "Escribí el testimonio antes de guardar", "error"); return; }
+  try {
+    await motivos.editar(id, { testimonio });
+    await cargarMotivos();
+    mostrar("msgMotivos", "¡Testimonio guardado! 🙌", "ok");
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+async function editarTexto(id) {
+  const el = document.getElementById("mtexto-" + id);
+  const textoActual = el.textContent;
+  const nuevo = await showModal({
+    icon: "✏️",
+    title: "Editar motivo",
+    msg: "Modificá el texto del motivo de oración",
+    input: true,
+    inputVal: textoActual,
+    confirmLabel: "Guardar cambios",
+  });
+  if (!nuevo || nuevo === textoActual) return;
+  try {
+    await motivos.editar(id, { texto: nuevo });
+    await cargarMotivos();
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+async function eliminarMotivo(id) {
+  const ok = await showModal({
+    icon: "🗑️",
+    title: "Eliminar motivo",
+    msg: "¿Estás seguro? Esta acción no se puede deshacer.",
+    confirmLabel: "Sí, eliminar",
+    confirmDanger: true,
+  });
+  if (!ok) return;
+  try {
+    await motivos.borrar(id);
+    await cargarMotivos();
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+function toggleNuevoMotivo() {
+  mostrandoNuevo = !mostrandoNuevo;
+  document.getElementById("nuevoMotivoForm").style.display = mostrandoNuevo ? "block" : "none";
+  document.getElementById("btnAgregarMotivo").textContent = mostrandoNuevo ? "✕ Cancelar" : "+ Agregar motivo";
+  if (mostrandoNuevo) document.getElementById("nuevoTexto").focus();
+}
+
+async function guardarMotivo() {
+  const texto = document.getElementById("nuevoTexto").value.trim();
+  const estado = document.getElementById("nuevoEstado").value;
+  const esPrivado = document.getElementById("nuevoPrivado").checked;
+  if (!texto) { mostrar("msgMotivos", "Escribí el motivo", "error"); return; }
+  try {
+    await motivos.crear(personaSeleccionada, texto, estado, esPrivado);
+    document.getElementById("nuevoTexto").value = "";
+    document.getElementById("nuevoPrivado").checked = false;
+    toggleNuevoMotivo();
+    await cargarMotivos();
+    mostrar("msgMotivos", "¡Motivo guardado!", "ok");
+  } catch(e) { mostrar("msgMotivos", "Error: " + e.message, "error"); }
+}
+
+iniciarMotivos();
+
+</script>
+
+<!-- MODAL PERSONALIZADO -->
+<div id="customModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#111827;border:1px solid rgba(124,159,255,0.2);border-radius:20px;padding:28px 28px 24px;max-width:400px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.6);animation:fadeUp 0.2s ease">
+    <div id="modalIcon" style="font-size:32px;text-align:center;margin-bottom:12px"></div>
+    <div id="modalTitle" style="font-family:'Lora',serif;font-size:18px;font-weight:600;color:#e8eaf0;text-align:center;margin-bottom:8px"></div>
+    <div id="modalMsg" style="font-size:14px;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:20px;line-height:1.5"></div>
+    <textarea id="modalInput" style="display:none;width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(124,159,255,0.2);background:rgba(255,255,255,0.04);color:#e8eaf0;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:72px;transition:border-color 0.2s;box-sizing:border-box;margin-bottom:16px"></textarea>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="modalCancel" style="padding:10px 24px;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">Cancelar</button>
+      <button id="modalConfirm" style="padding:10px 24px;border-radius:50px;border:none;background:linear-gradient(90deg,#7c9fff,#b98fff);color:white;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

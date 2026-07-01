@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Miembros del Grupo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* HEADER */
+.header{
+  text-align:center;
+  padding:60px 24px 40px;
+}
+
+.header h1{
+  font-family:'Lora',serif;
+  font-size:clamp(28px,6vw,44px);
+  font-weight:600;
+  background:linear-gradient(135deg,#fff,var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:10px;
+}
+.header p{color:var(--text-muted);font-size:15px}
+
+/* BUSCADOR */
+.search-wrapper{
+  max-width:480px;
+  margin:0 auto 40px;
+  padding:0 20px;
+  position:sticky;
+  top:16px;
+  z-index:10;
+}
+.search-wrapper input{
+  width:100%;
+  padding:16px 22px 16px 48px;
+  border-radius:50px;
+  border:1px solid var(--border);
+  background:rgba(8,15,30,0.85);
+  backdrop-filter:blur(20px);
+  color:var(--text);
+  font-size:16px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:all 0.25s;
+  min-height:52px;
+}
+.search-wrapper input:focus{
+  border-color:var(--accent);
+  background:rgba(8,15,30,0.95);
+}
+.search-wrapper input::placeholder{color:var(--text-muted)}
+.search-icon{
+  position:absolute;
+  left:38px;top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  pointer-events:none;
+}
+
+/* CONTADOR */
+.contador{
+  text-align:center;
+  font-size:13px;
+  color:var(--text-muted);
+  margin-bottom:24px;
+}
+.contador span{color:var(--accent);font-weight:500}
+
+/* GRID */
+.container{max-width:1100px;margin:auto;padding:0 20px 80px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px 20px 24px;
+  text-align:center;
+  transition:all 0.35s cubic-bezier(.2,.8,.2,1);
+  animation:fadeUp 0.4s ease both;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:var(--avatar-color,linear-gradient(90deg,var(--accent),var(--accent2)));
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.card:hover{
+  transform:translateY(-8px);
+  border-color:var(--border-hover);
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+.card:hover::before{opacity:1}
+.card:active{transform:scale(0.98)}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* AVATAR */
+.avatar{
+  width:90px;height:90px;
+  border-radius:50%;
+  margin:0 auto 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:600;
+  color:rgba(255,255,255,0.85);
+  background:#1a2235;
+  position:relative;
+  box-shadow:
+    6px 6px 14px rgba(0,0,0,0.5),
+    -4px -4px 10px rgba(255,255,255,0.04),
+    inset 2px 2px 5px rgba(255,255,255,0.05),
+    inset -3px -3px 7px rgba(0,0,0,0.4);
+  transition:all 0.35s ease;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.card:hover .avatar{
+  transform:scale(1.06);
+  box-shadow:
+    8px 8px 18px rgba(0,0,0,0.6),
+    -4px -4px 10px rgba(255,255,255,0.05),
+    inset 2px 2px 5px rgba(255,255,255,0.06),
+    inset -3px -3px 7px rgba(0,0,0,0.45);
+}
+
+/* NOMBRE */
+.card h3{
+  font-weight:500;
+  font-size:17px;
+  margin-bottom:10px;
+  color:var(--text);
+}
+
+/* BADGE DE MOTIVOS */
+.motivos-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:12px;
+  padding:5px 12px;
+  border-radius:50px;
+  margin-bottom:16px;
+  font-weight:500;
+}
+.badge-con{
+  background:rgba(78,204,163,0.12);
+  border:1px solid rgba(78,204,163,0.2);
+  color:#4ecca3;
+}
+.badge-sin{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--text-muted);
+}
+
+/* BTN */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 20px;
+  border-radius:50px;
+  background:rgba(124,159,255,0.12);
+  border:1px solid rgba(124,159,255,0.2);
+  color:var(--accent);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+  transition:all 0.2s;
+  min-height:40px;
+  width:100%;
+}
+.btn:hover{background:rgba(124,159,255,0.2)}
+
+/* VACÍO */
+.empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--text-muted);
+  display:none;
+  grid-column:1/-1;
+}
+.empty p{font-size:16px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="content">
+  <div class="header">
+    <a href="index.html" class="back-btn">← Volver al inicio</a>
+    <h1>Miembros del Grupo</h1>
+    <p>Tocá una persona para ver sus motivos de oración</p>
+  </div>
+
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input 
+      type="search" 
+      id="buscador" 
+      placeholder="Buscar persona..." 
+      autocomplete="off" 
+      autocorrect="off"
+      aria-label="Buscar miembro del grupo"
+      role="searchbox">
+  </div>
+
+  <div class="container">
+    <div class="contador">Mostrando <span id="countNum">0</span> miembros</div>
+    <div class="grid" id="gridPerfiles" role="region" aria-live="polite" aria-label="Listado de miembros"></div>
+    <div class="empty" id="empty" role="status">
+      <div style="font-size:40px">🔍</div>
+      <p>No encontramos a nadie con ese nombre</p>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 Grupo de Oración · Comunidad Privada</div>
+</div>
+
+<script src="datos.js"></script>
+<script>
+const grid = document.getElementById("gridPerfiles");
+const countEl = document.getElementById("countNum");
+const emptyEl = document.getElementById("empty");
+
+/* Colores únicos por persona */
+const colores = [
+  "linear-gradient(135deg,#7c9fff,#a78bfa)",
+  "linear-gradient(135deg,#f472b6,#fb923c)",
+  "linear-gradient(135deg,#34d399,#059669)",
+  "linear-gradient(135deg,#fb923c,#f59e0b)",
+  "linear-gradient(135deg,#a78bfa,#ec4899)",
+  "linear-gradient(135deg,#38bdf8,#0ea5e9)",
+  "linear-gradient(135deg,#4ade80,#22c55e)",
+  "linear-gradient(135deg,#f87171,#ef4444)",
+  "linear-gradient(135deg,#fbbf24,#f59e0b)",
+  "linear-gradient(135deg,#c084fc,#a855f7)",
+  "linear-gradient(135deg,#67e8f9,#06b6d4)",
+  "linear-gradient(135deg,#86efac,#4ade80)",
+  "linear-gradient(135deg,#fca5a5,#f87171)",
+  "linear-gradient(135deg,#fdba74,#fb923c)",
+  "linear-gradient(135deg,#a5b4fc,#818cf8)"
+];
+
+function crearCards(lista){
+  grid.innerHTML="";
+  lista.forEach((persona,i)=>{
+    const conMotivos = tieneMotivos(persona);
+    const card = document.createElement("div");
+    card.className="card";
+    card.style.animationDelay=(i*0.05)+"s";
+    card.style.setProperty("--avatar-color", colores[i % colores.length]);
+
+    const foto = obtenerFoto(persona);
+    let avatarHTML;
+    if(foto){
+      avatarHTML=`<div class="avatar"><img src="${foto}" alt="${persona}" onerror="this.parentElement.innerHTML='${persona.charAt(0)}'"></div>`;
+    } else {
+      avatarHTML=`<div class="avatar">${persona.charAt(0)}</div>`;
+    }
+
+    card.innerHTML=`
+      ${avatarHTML}
+      <h3>${persona}</h3>
+      <div class="motivos-badge ${conMotivos?'badge-con':'badge-sin'}">
+        ${conMotivos?'✓ Con motivos':'Sin motivos aún'}
+      </div>
+      <a class="btn" href="perfil.html?nombre=${encodeURIComponent(persona)}" aria-label="Ver motivos de ${persona}">Ver motivos</a>
+    `;
+
+    grid.appendChild(card);
+  });
+  countEl.textContent=lista.length;
+  emptyEl.style.display=lista.length===0?"block":"none";
+}
+
+crearCards(personas);
+
+document.getElementById("buscador").addEventListener("input",function(){
+  const q=this.value.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const filtradas=personas.filter(p=>
+    p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").includes(q)
+  );
+  crearCards(filtradas);
+});
+</script>
+</body>
+</html>

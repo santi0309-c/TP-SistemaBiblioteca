@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Admin — Motivos de Oración</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080f1e;
+  --card:rgba(255,255,255,0.04);
+  --card2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.2);
+  --text:#e8eaf0;
+  --text-muted:rgba(232,234,240,0.5);
+  --accent:#7c9fff;
+  --accent2:#b98fff;
+  --gold:#f0c060;
+  --success:#4ecca3;
+  --danger:#f87171;
+  --radius:20px;
+  --radius-sm:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:var(--text);
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 10% 10%,rgba(124,159,255,0.07) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+.content{position:relative;z-index:1;max-width:860px;margin:auto;padding:40px 20px 100px}
+
+/* HEADER */
+.page-header{margin-bottom:40px}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--text-muted);text-decoration:none;font-size:14px;
+  margin-bottom:24px;padding:10px 18px;border-radius:50px;
+  border:1px solid var(--border);background:var(--card);
+  transition:all 0.2s;min-height:44px;
+}
+.back-btn:hover{color:var(--text);border-color:var(--border-hover)}
+.page-header h1{
+  font-family:'Lora',serif;font-size:32px;font-weight:600;
+  background:linear-gradient(135deg,#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.page-header p{font-size:15px;color:var(--text-muted);line-height:1.6}
+
+/* SELECTOR DE PERSONA */
+.persona-selector{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
+  margin-bottom:36px;
+}
+.persona-btn{
+  padding:12px 10px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text-muted);font-size:14px;font-weight:500;
+  cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  min-height:70px;
+}
+.persona-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.persona-btn.active{
+  border-color:var(--accent);
+  background:rgba(124,159,255,0.1);
+  color:var(--accent);
+}
+.persona-btn .avatar-mini{
+  width:32px;height:32px;border-radius:50%;
+  background:#1a2235;
+  box-shadow:3px 3px 8px rgba(0,0,0,0.5),-2px -2px 5px rgba(255,255,255,0.04);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);
+}
+.persona-btn.active .avatar-mini{
+  background:rgba(124,159,255,0.2);
+  color:var(--accent);
+}
+.persona-btn .count-badge{
+  font-size:11px;
+  color:var(--text-muted);
+}
+.persona-btn.active .count-badge{color:var(--accent);opacity:0.7}
+
+/* PANEL DE EDICIÓN */
+.edit-panel{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.edit-panel-header{
+  padding:24px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  background:rgba(255,255,255,0.02);
+}
+.edit-panel-header h2{
+  font-family:'Lora',serif;font-size:20px;font-weight:600;
+}
+.edit-panel-header p{font-size:13px;color:var(--text-muted);margin-top:2px}
+
+/* LISTA DE MOTIVOS */
+.motivos-lista{padding:20px 28px}
+.motivo-row{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:16px;margin-bottom:10px;
+  animation:fadeUp 0.25s ease both;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.motivo-row textarea{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;
+  resize:none;line-height:1.6;min-height:44px;
+  overflow:hidden;
+}
+.motivo-row textarea::placeholder{color:var(--text-muted)}
+.motivo-row-right{
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;
+}
+.estado-select{
+  padding:6px 10px;border-radius:50px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);
+  color:var(--text);font-size:12px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;cursor:pointer;
+  transition:all 0.2s;
+}
+.estado-select:focus{border-color:var(--accent)}
+.estado-select option{background:#0e1829}
+.estado-select.oracion{border-color:rgba(124,159,255,0.4);color:var(--accent)}
+.estado-select.constante{border-color:rgba(240,192,96,0.4);color:var(--gold)}
+.estado-select.activo{border-color:rgba(78,204,163,0.4);color:var(--success)}
+.estado-select.respondido{border-color:rgba(255,255,255,0.15);color:var(--text-muted)}
+
+.del-btn{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text-muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.del-btn:hover{border-color:rgba(248,113,113,0.4);background:rgba(248,113,113,0.08);color:var(--danger)}
+
+.empty-persona{
+  text-align:center;padding:40px 20px;color:var(--text-muted);
+}
+.empty-persona .emoji{font-size:32px;margin-bottom:10px}
+.empty-persona p{font-size:14px}
+
+/* AGREGAR */
+.agregar-row{
+  margin-top:6px;
+}
+.agregar-btn{
+  width:100%;padding:13px;border-radius:var(--radius-sm);
+  border:1px dashed rgba(255,255,255,0.12);background:transparent;
+  color:var(--text-muted);font-size:14px;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:all 0.2s;
+}
+.agregar-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,159,255,0.05)}
+
+/* FOOTER ACCIONES */
+.acciones{
+  padding:20px 28px;border-top:1px solid var(--border);
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+}
+.save-btn{
+  padding:13px 28px;border-radius:50px;border:none;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:white;font-weight:600;font-size:15px;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:all 0.25s;min-height:48px;
+}
+.save-btn:hover{opacity:0.9}
+.save-btn:active{transform:scale(0.98)}
+.copy-btn{
+  padding:13px 22px;border-radius:50px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text-muted);font-size:14px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:all 0.2s;min-height:48px;
+}
+.copy-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.save-hint{font-size:13px;color:var(--text-muted);flex:1;text-align:right}
+
+/* MODAL CÓDIGO */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+
+.modal{
+  background:#0e1829;border:1px solid var(--border);
+  border-radius:var(--radius);width:100%;max-width:680px;
+  max-height:85vh;display:flex;flex-direction:column;
+  transform:translateY(20px);transition:transform 0.3s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h3{font-family:'Lora',serif;font-size:18px;font-weight:600}
+.modal-header p{font-size:13px;color:var(--text-muted);margin-top:3px}
+.close-btn{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+  background:transparent;color:var(--text-muted);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.close-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.modal-body{
+  flex:1;overflow-y:auto;padding:20px 24px;
+}
+.code-block{
+  background:#060d1a;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:20px;
+  font-family:monospace;font-size:13px;line-height:1.7;
+  color:#a8c4ff;white-space:pre;overflow-x:auto;
+  user-select:all;
+}
+.modal-footer{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;gap:10px;
+}
+.copy-code-btn{
+  flex:1;padding:13px;border-radius:50px;border:none;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:white;font-weight:600;font-size:15px;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:all 0.25s;min-height:48px;
+}
+.copy-code-btn:hover{opacity:0.9}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  background:#1e2d4a;border:1px solid var(--accent);
+  color:var(--accent);padding:12px 24px;border-radius:50px;
+  font-size:14px;font-weight:500;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;
+  z-index:200;white-space:nowrap;
+}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="content">
+
+  <div class="page-header">
+    <a href="index.html" class="back-btn">← Volver al inicio</a>
+    <h1>🔐 Panel de Admin</h1>
+    <p>Editá los motivos de oración de cada persona. Cuando termines, copiá el código y pegalo en <strong>perfil.html</strong>.</p>
+  </div>
+
+  <!-- SELECTOR -->
+  <div class="persona-selector" id="personaSelector"></div>
+
+  <!-- PANEL EDICIÓN -->
+  <div class="edit-panel" id="editPanel" style="display:none">
+    <div class="edit-panel-header">
+      <div>
+        <h2 id="editNombre"></h2>
+        <p id="editSubtitle"></p>
+      </div>
+    </div>
+
+    <div class="motivos-lista">
+      <div id="motivosEdit"></div>
+      <div class="agregar-row">
+        <button class="agregar-btn" onclick="agregarMotivo()">+ Agregar motivo</button>
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button class="save-btn" onclick="guardarCambios()">Guardar cambios</button>
+      <button class="copy-btn" onclick="mostrarCodigo()">Ver código para copiar</button>
+      <span class="save-hint">Los cambios se guardan localmente</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL CÓDIGO -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Código para perfil.html</h3>
+        <p>Copiá y reemplazá el objeto <code style="color:var(--accent)">datos</code> en perfil.html</p>
+      </div>
+      <button class="close-btn" onclick="cerrarModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="code-block" id="codigoBloque"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="copy-code-btn" onclick="copiarCodigo()">Copiar código</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+/* ---- PERSONAS ---- */
+const nombresOrden = [
+  "Juan","María","Santy","Lucas","Valentina","Tomás",
+  "Sofía","Mateo","Camila","Agustín","Martina","Franco",
+  "Julieta","Nicolás","Micaela"
+];
+
+/* ---- DATOS INICIALES (igual que en perfil.html) ---- */
+const datosIniciales = {
+  "Juan": [
+    { texto: "Exámenes finales de la facultad", estado: "oracion" },
+    { texto: "Salud de su abuelo", estado: "constante" },
+    { texto: "Conseguir trabajo de verano", estado: "respondido" }
+  ],
+  "María": [
+    { texto: "Dirección espiritual y toma de decisiones", estado: "oracion" },
+    { texto: "Su familia", estado: "constante" }
+  ],
+  "Santy": [
+    { texto: "Proyecto personal que está desarrollando", estado: "activo" },
+    { texto: "Crecimiento espiritual", estado: "constante" }
+  ],
+  "Lucas": [],
+  "Valentina": [],
+  "Tomás": [],
+  "Sofía": [],
+  "Mateo": [],
+  "Camila": [],
+  "Agustín": [],
+  "Martina": [],
+  "Franco": [],
+  "Julieta": [],
+  "Nicolás": [],
+  "Micaela": []
+};
+
+/* ---- ESTADO GLOBAL ---- */
+let datos = JSON.parse(localStorage.getItem("admin_datos")) || JSON.parse(JSON.stringify(datosIniciales));
+let personaActual = null;
+
+/* ---- RENDER SELECTOR ---- */
+function renderSelector() {
+  const cont = document.getElementById("personaSelector");
+  cont.innerHTML = nombresOrden.map(nombre => {
+    const count = (datos[nombre] || []).filter(m => m.estado !== "respondido").length;
+    const isActive = nombre === personaActual;
+    return `<button class="persona-btn ${isActive ? 'active' : ''}" onclick="seleccionarPersona('${nombre}')">
+      <div class="avatar-mini">${nombre.charAt(0)}</div>
+      <span>${nombre}</span>
+      <span class="count-badge">${count > 0 ? count + ' motivo' + (count > 1 ? 's' : '') : 'sin motivos'}</span>
+    </button>`;
+  }).join("");
+}
+
+/* ---- SELECCIONAR PERSONA ---- */
+function seleccionarPersona(nombre) {
+  personaActual = nombre;
+  renderSelector();
+  renderEdit();
+  document.getElementById("editPanel").style.display = "block";
+  document.getElementById("editPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+/* ---- RENDER EDICIÓN ---- */
+function renderEdit() {
+  const motivos = datos[personaActual] || [];
+  document.getElementById("editNombre").textContent = personaActual;
+  const activos = motivos.filter(m => m.estado !== "respondido").length;
+  document.getElementById("editSubtitle").textContent =
+    activos === 0 ? "Sin motivos activos" :
+    activos === 1 ? "1 motivo activo" : activos + " motivos activos";
+
+  const cont = document.getElementById("motivosEdit");
+  if (motivos.length === 0) {
+    cont.innerHTML = `<div class="empty-persona"><div class="emoji">🕊️</div><p>Sin motivos todavía. Agregá uno.</p></div>`;
+    return;
+  }
+
+  cont.innerHTML = motivos.map((m, i) => `
+    <div class="motivo-row" id="row-${i}">
+      <textarea
+        id="txt-${i}"
+        placeholder="Escribí el motivo..."
+        oninput="autoResize(this); actualizarDato(${i}, 'texto', this.value)"
+      >${m.texto}</textarea>
+      <div class="motivo-row-right">
+        <select class="estado-select ${m.estado}" id="sel-${i}"
+          onchange="actualizarDato(${i}, 'estado', this.value); actualizarColorSelect(this)">
+          <option value="oracion"  ${m.estado==='oracion'   ? 'selected' : ''}>En oración</option>
+          <option value="activo"   ${m.estado==='activo'    ? 'selected' : ''}>Activo</option>
+          <option value="constante"${m.estado==='constante' ? 'selected' : ''}>Constante</option>
+          <option value="respondido"${m.estado==='respondido'? 'selected' : ''}>Respondido ✓</option>
+        </select>
+        <button class="del-btn" onclick="eliminarMotivo(${i})">✕</button>
+      </div>
+    </div>
+  `).join("");
+
+  // Auto-resize textareas
+  cont.querySelectorAll("textarea").forEach(autoResize);
+}
+
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
+function actualizarColorSelect(sel) {
+  sel.className = "estado-select " + sel.value;
+}
+
+/* ---- CRUD ---- */
+function actualizarDato(i, campo, valor) {
+  if (!datos[personaActual]) datos[personaActual] = [];
+  datos[personaActual][i][campo] = valor;
+}
+
+function agregarMotivo() {
+  if (!datos[personaActual]) datos[personaActual] = [];
+  datos[personaActual].push({ texto: "", estado: "oracion" });
+  renderEdit();
+  // Focus en el nuevo textarea
+  const textareas = document.querySelectorAll("#motivosEdit textarea");
+  if (textareas.length) textareas[textareas.length - 1].focus();
+}
+
+function eliminarMotivo(i) {
+  datos[personaActual].splice(i, 1);
+  renderEdit();
+}
+
+function guardarCambios() {
+  // Sincronizar textareas al estado antes de guardar
+  const motivos = datos[personaActual] || [];
+  motivos.forEach((m, i) => {
+    const txt = document.getElementById("txt-" + i);
+    const sel = document.getElementById("sel-" + i);
+    if (txt) m.texto = txt.value.trim();
+    if (sel) m.estado = sel.value;
+  });
+  // Filtrar vacíos
+  datos[personaActual] = motivos.filter(m => m.texto !== "");
+  localStorage.setItem("admin_datos", JSON.stringify(datos));
+  renderSelector();
+  renderEdit();
+  toast("Cambios guardados ✓");
+}
+
+/* ---- CÓDIGO ---- */
+function generarCodigo() {
+  // Asegurar datos sincronizados
+  const motivos = datos[personaActual] || [];
+  motivos.forEach((m, i) => {
+    const txt = document.getElementById("txt-" + i);
+    const sel = document.getElementById("sel-" + i);
+    if (txt) m.texto = txt.value.trim();
+    if (sel) m.estado = sel.value;
+  });
+
+  let lines = ["const datos = {"];
+  nombresOrden.forEach((nombre, idx) => {
+    const list = (datos[nombre] || []).filter(m => m.texto);
+    const isLast = idx === nombresOrden.length - 1;
+    if (list.length === 0) {
+      lines.push(`  "${nombre}": []${isLast ? "" : ","}`);
+    } else {
+      lines.push(`  "${nombre}": [`);
+      list.forEach((m, mi) => {
+        const isLastM = mi === list.length - 1;
+        lines.push(`    { texto: "${m.texto.replace(/"/g, '\\"')}", estado: "${m.estado}" }${isLastM ? "" : ","}`);
+      });
+      lines.push(`  ]${isLast ? "" : ","}`);
+    }
+  });
+  lines.push("};");
+  return lines.join("\n");
+}
+
+function mostrarCodigo() {
+  document.getElementById("codigoBloque").textContent = generarCodigo();
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function cerrarModal(e) {
+  if (e.target === document.getElementById("modalOverlay")) {
+    document.getElementById("modalOverlay").classList.remove("open");
+  }
+}
+function cerrarModalBtn() {
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+
+function copiarCodigo() {
+  navigator.clipboard.writeText(generarCodigo());
+  toast("Código copiado ✓ Pegalo en perfil.html");
+}
+
+/* ---- TOAST ---- */
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+/* ---- INIT ---- */
+renderSelector();
+</script>
+</body>
+</html>

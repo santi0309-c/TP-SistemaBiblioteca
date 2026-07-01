@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Motivos de Oración</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* NAV BAR ESTÁNDAR */
+.nav-bar{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 20px 24px;gap:12px;flex-wrap:wrap}
+.nav-user{display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:14px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:rgba(124,159,255,0.15);border:1px solid rgba(124,159,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--accent);overflow:hidden}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:50px;background:rgba(124,159,255,0.08);border:1px solid rgba(124,159,255,0.15);color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;cursor:pointer}
+.nav-link:hover{background:rgba(124,159,255,0.18)}
+
+.content{position:relative;z-index:1;max-width:720px;margin:auto;padding:40px 20px 80px}
+
+/* PERFIL HEADER */
+.perfil-header{display:flex;align-items:center;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;margin-bottom:32px;position:relative;overflow:hidden}
+.perfil-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.perfil-avatar{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:600;color:rgba(255,255,255,0.85);background:#1a2235;box-shadow:6px 6px 14px rgba(0,0,0,0.5),-4px -4px 10px rgba(255,255,255,0.04),inset 2px 2px 5px rgba(255,255,255,0.05),inset -3px -3px 7px rgba(0,0,0,0.4);flex-shrink:0;overflow:hidden}
+.perfil-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.perfil-info h2{font-family:'Lora',serif;font-size:24px;font-weight:600;margin-bottom:4px}
+.perfil-info p{font-size:14px;color:var(--text-muted)}
+
+/* SECCIÓN */
+.sec-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:12px}
+.sep{margin-bottom:32px}
+
+/* MOTIVO ITEM */
+.motivo-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-bottom:10px;transition:border-color 0.2s;animation:fadeUp 0.3s ease both}
+.motivo-item:hover{border-color:var(--border-hover)}
+.motivo-item.respondido{opacity:0.45}
+.motivo-item.respondido .motivo-texto{text-decoration:line-through;color:var(--text-muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.motivo-texto{font-size:16px;line-height:1.6;margin-bottom:12px}
+.motivo-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* ORE BUTTON */
+.ore-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:500;background:rgba(78,204,163,0.1);border:1px solid rgba(78,204,163,0.2);color:#4ecca3;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.ore-btn:hover{background:rgba(78,204,163,0.2)}
+.ore-btn.ya-ore{background:rgba(78,204,163,0.05);border-color:rgba(78,204,163,0.1);color:rgba(78,204,163,0.5);cursor:default}
+.ore-count{font-size:12px;color:var(--text-muted)}
+
+/* COPIAR */
+.copiar-btn{width:100%;padding:15px;border-radius:50px;border:1px solid var(--border);background:var(--card);color:var(--text-muted);font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.25s;min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.copiar-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,159,255,0.06)}
+.copiar-btn.copiado{border-color:rgba(78,204,163,0.4);color:var(--success);background:rgba(78,204,163,0.06)}
+
+/* EMPTY */
+.empty-sec{text-align:center;padding:24px;color:var(--text-muted);font-size:14px}
+
+/* MODO ENFOQUE / LECTURA */
+.focus-btn{position:fixed;top:16px;right:16px;z-index:200;padding:8px 16px;border-radius:50px;background:rgba(124,159,255,0.15);border:1px solid rgba(124,159,255,0.3);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;backdrop-filter:blur(6px)}
+.focus-btn:hover{background:rgba(124,159,255,0.25)}
+body.modo-enfoque .nav-bar,
+body.modo-enfoque .copy-btn-wrap,
+body.modo-enfoque .persona-sub{display:none!important}
+body.modo-enfoque .motivo-footer button,
+body.modo-enfoque .ore-btn{display:none!important}
+body.modo-enfoque .content{max-width:600px}
+body.modo-enfoque .focus-btn{background:rgba(78,204,163,0.2);border-color:rgba(78,204,163,0.4);color:var(--success)}
+
+@media(min-width:768px){
+  .content{max-width:800px;padding:60px 40px 80px}
+  .perfil-header{padding:36px 32px;gap:28px}
+  .perfil-avatar{width:90px;height:90px;font-size:32px}
+  .perfil-info h2{font-size:28px}
+  .motivo-texto{font-size:17px}
+  .focus-btn{top:24px;right:24px;font-size:13px;padding:10px 20px}
+}
+</style>
+</head>
+<body>
+<button class="focus-btn" id="focusBtn" onclick="toggleFocus()">🕊️ Enfoque</button>
+<div class="content">
+
+  <!-- NAV BAR ESTÁNDAR -->
+  <div class="nav-bar" style="max-width:1100px; padding-left:0; padding-right:0">
+    <div class="nav-user">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <span id="navNombre">Cargando...</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="home.html">🏠 Home</a>
+      <a class="nav-link" href="personas.html">👥 Miembros</a>
+      <a class="nav-link" id="navTodos" href="todos.html" style="display:none">🙏 Todos</a>
+      <a class="nav-link" href="seguimiento.html">📅 Seguimiento</a>
+      <a class="nav-link" href="mi-perfil.html">👤 Mi perfil</a>
+    </div>
+  </div>
+
+  <div class="perfil-header">
+    <div class="perfil-avatar" id="perfilAvatar"></div>
+    <div class="perfil-info">
+      <h2 id="perfilNombre">Cargando...</h2>
+      <p id="perfilSubtitle"></p>
+    </div>
+  </div>
+
+  <div class="sep">
+    <div class="sec-title">Activos</div>
+    <div id="motivosActivos"></div>
+  </div>
+
+  <div class="sep">
+    <div class="sec-title">Constantes</div>
+    <div id="motivosConstantes"></div>
+  </div>
+
+  <div class="sep">
+    <div class="sec-title">✓ Respondidos</div>
+    <div id="motivosRespondidos"></div>
+  </div>
+  
+  <button class="copiar-btn" id="copiarBtn" onclick="copiarMotivos()">
+    📋 Copiar motivos de oración
+  </button>
+
+</div>
+
+<script src="api.js"></script>
+<script>
+requireAuth();
+
+const params      = new URLSearchParams(window.location.search);
+const personaId   = params.get("id");
+const personaNombre = params.get("nombre") || "Persona";
+const badgeLabel  = { oracion:"En oración", constante:"Constante", activo:"Activo", respondido:"Respondido ✓" };
+
+let todosMisMotivos = [];
+
+if (!personaId) window.location.href = "home.html";
+
+// Init
+(async () => {
+  try {
+    // Cargar Navbar
+    const perfil = await usuarioApi.perfil();
+    const navAv = document.getElementById("navAvatar");
+    if (perfil.foto_url) {
+      navAv.innerHTML = `<img src="${perfil.foto_url}" alt="${perfil.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      navAv.textContent = perfil.nombre.charAt(0).toUpperCase();
+    }
+    document.getElementById("navNombre").textContent = perfil.nombre;
+    if (perfil.rol === "admin") { const nt = document.getElementById("navTodos"); if (nt) nt.style.removeProperty("display"); }
+
+    // Configurar Perfil Público
+    document.getElementById("perfilNombre").textContent = personaNombre;
+    
+    // Buscar la foto real de esta persona específica
+    const lista = await personas.listar();
+    const estaPersona = lista.find(p => p.id == personaId);
+    const av = document.getElementById("perfilAvatar");
+    
+    if (estaPersona && estaPersona.foto_url) {
+      av.innerHTML = `<img src="${estaPersona.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt="${personaNombre}">`;
+    } else {
+      av.textContent = personaNombre.charAt(0).toUpperCase();
+    }
+
+    // Cargar motivos
+    await cargarMotivos();
+  } catch (e) {
+    console.error(e);
+  }
+})();
+
+async function cargarMotivos() {
+  try {
+    todosMisMotivos = await motivos.listar(personaId);
+    renderMotivos();
+  } catch (e) {
+    document.getElementById("motivosActivos").innerHTML = `<p style="color:var(--text-muted)">Error: ${e.message}</p>`;
+  }
+}
+
+function renderMotivos() {
+  const activos    = todosMisMotivos.filter(m => m.estado === "oracion" || m.estado === "activo");
+  const constantes = todosMisMotivos.filter(m => m.estado === "constante");
+  const respondidos= todosMisMotivos.filter(m => m.estado === "respondido");
+
+  renderLista(activos,    "motivosActivos");
+  renderLista(constantes, "motivosConstantes");
+  renderLista(respondidos,"motivosRespondidos");
+
+  const total = todosMisMotivos.filter(m => m.estado !== "respondido").length;
+  document.getElementById("perfilSubtitle").textContent =
+    total === 0 ? "Sin motivos activos" :
+    total === 1 ? "1 motivo de oración" :
+    total + " motivos de oración";
+}
+
+function renderLista(lista, contId) {
+  const cont = document.getElementById(contId);
+  const usuario = getUsuario();
+
+  if (!lista.length) {
+    cont.innerHTML = `<div class="empty-sec">🕊️ Sin motivos en esta sección</div>`;
+    return;
+  }
+
+  cont.innerHTML = lista.map((m, i) => {
+    const yaOre = m.yo_ore_hoy;
+    const esRespondido = m.estado === "respondido";
+    const puedeEditar = usuario && (usuario.id === m.usuario_id || usuario.rol === "admin");
+
+    return `
+      <div class="motivo-item ${esRespondido ? 'respondido' : ''}" id="item-${m.id}" style="animation-delay:${i*0.06}s">
+        <div class="motivo-texto" id="texto-${m.id}">${m.texto}</div>
+        ${m.testimonio ? `
+          <div style="margin-top:10px;padding:10px 14px;background:rgba(240,192,96,0.07);border:1px solid rgba(240,192,96,0.2);border-radius:10px;font-size:13px;line-height:1.6;color:rgba(255,255,255,0.8)">
+            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--gold,#f0c060);margin-bottom:4px">🙌 Testimonio</div>
+            ${m.testimonio}
+          </div>` : ''}
+        ${esRespondido && puedeEditar && !m.testimonio ? `
+          <div style="margin-top:10px" id="testimonio-wrap-${m.id}">
+            <button class="ore-btn" style="font-size:12px" onclick="mostrarTestimonio('${m.id}')">✍️ Añadir Testimonio del Motivo</button>
+          </div>` : ''}
+        <div class="motivo-footer">
+          <span class="badge ${m.estado}">${badgeLabel[m.estado] || m.estado}</span>
+          ${m.es_privado ? `<span class="badge" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--text-muted)">🔒 Privado</span>` : ''}
+          ${m.veces_orado > 0 ? `<span class="ore-count">🙏 ${m.veces_orado} veces</span>` : ''}
+          <button class="ore-btn ${yaOre ? 'ya-ore' : ''}" id="ore-${m.id}"
+            onclick="${yaOre ? '' : `registrarOracion('${m.id}')`}"
+            ${yaOre ? 'disabled' : ''}>
+            ${yaOre ? '✓ Ya oré' : '🙏 Oré'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function mostrarTestimonio(motivoId) {
+  const wrap = document.getElementById("testimonio-wrap-" + motivoId);
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <textarea id="tarea-${motivoId}" placeholder="Contá qué pasó... ¿cómo respondió Dios?" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(240,192,96,0.2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical;min-height:80px;box-sizing:border-box;margin-bottom:8px;outline:none"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="ore-btn" style="background:rgba(240,192,96,0.12);border-color:rgba(240,192,96,0.25);color:#f0c060" onclick="guardarTestimonio('${motivoId}')">🙌 Publicar testimonio</button>
+      <button class="ore-btn" style="opacity:0.5" onclick="document.getElementById('testimonio-wrap-${motivoId}').innerHTML='<button class=\\'ore-btn\\' style=\\'font-size:12px\\' onclick=\\'mostrarTestimonio(\\'${motivoId}\\')\\'>✍️ Añadir Testimonio del Motivo</button>'">Cancelar</button>
+    </div>
+  `;
+}
+
+async function guardarTestimonio(motivoId) {
+  const ta = document.getElementById("tarea-" + motivoId);
+  const texto = ta.value.trim();
+  if (!texto) { alert("Escribí algo antes de publicar"); return; }
+  try {
+    await motivos.testimonio(motivoId, texto);
+    const m = todosMisMotivos.find(x => x.id == motivoId);
+    if (m) m.testimonio = texto;
+    renderMotivos();
+  } catch(e) {
+    alert("Error al guardar: " + e.message);
+  }
+}
+
+async function registrarOracion(motivoId) {
+  const btn = document.getElementById("ore-" + motivoId);
+  btn.disabled = true;
+  btn.textContent = "...";
+  try {
+    await motivos.ore(motivoId);
+    btn.textContent = "✓ Ya oré";
+    btn.classList.add("ya-ore");
+    const m = todosMisMotivos.find(x => x.id === motivoId);
+    if (m) { m.yo_ore_hoy = true; m.veces_orado = parseInt(m.veces_orado) + 1; }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = "🙏 Oré";
+    alert(e.message);
+  }
+}
+
+function copiarMotivos() {
+  const noRespondidos = todosMisMotivos.filter(m => m.estado !== "respondido");
+  if (!noRespondidos.length) { alert("No hay motivos para copiar"); return; }
+
+  const lineas = [`🙏 Motivos de oración de ${personaNombre}:`];
+  const grupos = { oracion:"📌 En oración:", activo:"✅ Activos:", constante:"🔁 Constantes:" };
+  ["oracion","activo","constante"].forEach(est => {
+    const grp = noRespondidos.filter(m => m.estado === est && !m.es_privado);
+    if (grp.length) { lineas.push(""); lineas.push(grupos[est]); grp.forEach(m => lineas.push("• " + m.texto)); }
+  });
+
+  navigator.clipboard.writeText(lineas.join("\n"));
+  const btn = document.getElementById("copiarBtn");
+  btn.textContent = "✓ Copiado";
+  btn.classList.add("copiado");
+  setTimeout(() => { btn.innerHTML = "📋 Copiar motivos de oración"; btn.classList.remove("copiado"); }, 2500);
+}
+
+function toggleFocus() {
+  const enFocus = document.body.classList.toggle("modo-enfoque");
+  document.getElementById("focusBtn").textContent = enFocus ? "✕ Salir" : "🕊️ Enfoque";
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mi Seguimiento · Grupo de Oración</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.nav-bar{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 20px 24px;gap:12px;flex-wrap:wrap}
+.nav-user{display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:14px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:rgba(124,159,255,0.15);border:1px solid rgba(124,159,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--accent);overflow:hidden}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-link{padding:8px 16px;border-radius:50px;background:rgba(124,159,255,0.08);border:1px solid rgba(124,159,255,0.15);color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s;cursor:pointer}
+.nav-link:hover{background:rgba(124,159,255,0.18)}
+.nav-link.active{background:rgba(124,159,255,0.2);border-color:rgba(124,159,255,0.4)}
+
+.content{position:relative;z-index:1;max-width:800px;margin:auto;padding:40px 20px 80px}
+.header-title{font-family:'Lora',serif;font-size:clamp(26px,6vw,40px);font-weight:600;margin-bottom:8px;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-sub{font-size:15px;color:var(--text-muted);margin-bottom:32px}
+
+/* CARD PERSONA ASIGNADA */
+.asignado-card{background:rgba(124,159,255,0.07);border:1px solid rgba(124,159,255,0.2);border-radius:var(--radius);padding:28px 24px;margin-bottom:32px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
+.asignado-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.asignado-avatar{width:64px;height:64px;border-radius:50%;background:#1a2235;border:2px solid rgba(124,159,255,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:rgba(255,255,255,0.85);overflow:hidden;box-shadow:4px 4px 12px rgba(0,0,0,0.4);flex-shrink:0}
+.asignado-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.asignado-info{flex:1}
+.asignado-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin-bottom:6px}
+.asignado-nombre{font-family:'Lora',serif;font-size:24px;font-weight:600;color:var(--text)}
+.asignado-sub{font-size:13px;color:var(--text-muted);margin-top:4px}
+
+/* CONFETTI */
+.confetti-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;border-radius:var(--radius)}
+.confetti-star{position:absolute;font-size:18px;animation:confettiFall 1.2s ease-out forwards;opacity:0}
+@keyframes confettiFall{
+  0%{opacity:1;transform:translateY(-10px) rotate(0deg) scale(0.5)}
+  60%{opacity:1;transform:translateY(var(--ty)) rotate(var(--rot)) scale(1.2)}
+  100%{opacity:0;transform:translateY(calc(var(--ty) + 30px)) rotate(calc(var(--rot) + 120deg)) scale(0.8)}
+}
+
+/* SEMANA */
+.sec-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:16px;display:block}
+.semana-cards{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:32px}
+.dia-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 6px;text-align:center;position:relative;overflow:hidden;transition:all 0.25s}
+.dia-card.es-hoy{border:2px solid var(--accent);background:rgba(124,159,255,0.08);cursor:pointer}
+.dia-card.es-hoy:hover{background:rgba(124,159,255,0.14);transform:translateY(-2px)}
+.dia-card.es-hoy:active{transform:scale(0.97)}
+.dia-card.marcado{border-color:var(--success) !important;background:rgba(78,204,163,0.1) !important}
+.dia-card.sin-marcar-pasado{border-color:rgba(255,100,100,0.25);background:rgba(255,100,100,0.05)}
+.dia-card.futuro{opacity:0.35}
+.dia-nombre{font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-muted);margin-bottom:4px}
+.dia-num{font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px}
+.dia-card.es-hoy .dia-num{color:var(--accent)}
+.dia-card.marcado .dia-num{color:var(--success)}
+.dia-check{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:13px;transition:all 0.25s}
+.dia-card.es-hoy .dia-check{border-color:rgba(124,159,255,0.4)}
+.dia-card.marcado .dia-check{background:var(--success);border-color:var(--success);color:var(--bg);font-size:14px}
+.dia-card.sin-marcar-pasado .dia-check{border-color:rgba(255,100,100,0.3);color:rgba(255,100,100,0.5);font-size:12px}
+.hoy-label{position:absolute;top:4px;right:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;background:rgba(124,159,255,0.2);color:var(--accent);padding:2px 5px;border-radius:4px}
+.dia-card.marcado .hoy-label{background:rgba(78,204,163,0.2);color:var(--success)}
+
+/* CALENDARIO MENSUAL */
+.calendar-section{margin-bottom:32px}
+.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.calendar-btn{width:38px;height:38px;border:1px solid var(--border);background:var(--card);border-radius:50%;color:var(--text);cursor:pointer;font-size:16px;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+.calendar-btn:hover{border-color:var(--accent);color:var(--accent)}
+.calendar-title{font-family:'Lora',serif;font-size:17px;font-weight:600;color:var(--text)}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+.calendar-day-header{text-align:center;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;padding:6px;letter-spacing:0.4px}
+.calendar-day{aspect-ratio:1;background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--text-muted);position:relative;overflow:hidden}
+.calendar-day.other-month{opacity:0.25}
+.calendar-day.past-unmarked{background:rgba(255,100,100,0.07);border-color:rgba(255,100,100,0.2);color:rgba(255,140,140,0.7)}
+.calendar-day.marcado-cal{background:rgba(78,204,163,0.12);border-color:rgba(78,204,163,0.3);color:var(--success)}
+.calendar-day.today-cal{border:2px solid var(--accent);color:var(--accent);cursor:pointer;background:rgba(124,159,255,0.08)}
+.calendar-day.today-cal:hover{background:rgba(124,159,255,0.14)}
+.calendar-day.today-cal:active{transform:scale(0.94)}
+.cal-dot{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:currentColor;opacity:0.6}
+.cal-asignado{font-size:8px;line-height:1.1;opacity:0.65;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;text-align:center}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px 12px;text-align:center}
+.stat-label{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.stat-value{font-family:'Lora',serif;font-size:28px;font-weight:600;color:var(--accent)}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,
+    rgba(124,159,255,0.06) 0%,
+    rgba(124,159,255,0.12) 40%,
+    rgba(185,143,255,0.1) 50%,
+    rgba(124,159,255,0.12) 60%,
+    rgba(124,159,255,0.06) 100%
+  );
+  background-size:200% 100%;
+  animation:prayerShimmer 2s ease-in-out infinite;border-radius:var(--radius-sm);}
+@keyframes prayerShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+@keyframes pulse{0%,100%{opacity:0.6}50%{opacity:1}}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2d4a;border:1px solid var(--accent);color:var(--accent);padding:12px 24px;border-radius:50px;font-size:14px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:100;white-space:nowrap}
+.toast.show{opacity:1}
+
+@media(max-width:600px){
+  .semana-cards{gap:5px}
+  .dia-num{font-size:16px}
+  .dia-nombre{font-size:9px}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .stat-value{font-size:22px}
+}
+
+/* MODO LECTURA / ENFOQUE */
+.focus-btn{position:fixed;top:16px;right:16px;z-index:200;padding:8px 16px;border-radius:50px;background:rgba(124,159,255,0.15);border:1px solid rgba(124,159,255,0.3);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;backdrop-filter:blur(6px)}
+.focus-btn:hover{background:rgba(124,159,255,0.25)}
+body.modo-enfoque .nav-bar,
+body.modo-enfoque .stats-grid,
+body.modo-enfoque .calendar-section,
+body.modo-enfoque .heatmap-section,
+body.modo-enfoque .sec-label,
+body.modo-enfoque .semana-cards,
+body.modo-enfoque .header-sub{display:none!important}
+body.modo-enfoque .header-title{margin-bottom:32px}
+body.modo-enfoque .asignado-card{margin-top:60px}
+body.modo-enfoque .focus-btn{background:rgba(78,204,163,0.2);border-color:rgba(78,204,163,0.4);color:var(--success)}
+
+/* HEATMAP */
+.heatmap-section{margin-bottom:32px}
+.heatmap-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.heatmap-year{font-size:11px;color:var(--accent);opacity:0.7}
+.heatmap-grid{display:grid;grid-template-columns:auto repeat(53,1fr);gap:2px;align-items:start;overflow-x:auto}
+.heatmap-month-labels{display:flex;gap:0;margin-bottom:4px;padding-left:22px}
+.heatmap-day-labels{display:grid;grid-template-rows:repeat(7,10px);gap:2px;margin-right:4px;padding-top:0}
+.heatmap-day-label{font-size:8px;color:var(--text-muted);text-align:right;height:10px;line-height:10px}
+.heatmap-weeks{display:flex;gap:2px}
+.heatmap-week{display:grid;grid-template-rows:repeat(7,10px);gap:2px}
+.heatmap-cell{width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.06);cursor:default;transition:transform 0.1s;position:relative}
+.heatmap-cell:hover{transform:scale(1.4);z-index:10}
+.heatmap-cell.nivel-1{background:rgba(124,159,255,0.25)}
+.heatmap-cell.nivel-2{background:rgba(124,159,255,0.5)}
+.heatmap-cell.nivel-3{background:rgba(124,159,255,0.75)}
+.heatmap-cell.nivel-4{background:rgba(124,159,255,1)}
+.heatmap-cell.hoy-cell{outline:1.5px solid rgba(78,204,163,0.8);outline-offset:1px}
+.heatmap-cell.futuro-cell{opacity:0.25}
+.heatmap-legend{display:flex;align-items:center;gap:6px;margin-top:10px;justify-content:flex-end;font-size:11px;color:var(--text-muted)}
+.heatmap-legend-cell{width:10px;height:10px;border-radius:2px}
+.heatmap-months-row{display:grid;grid-template-columns:auto repeat(53,12px);gap:2px;margin-bottom:2px;padding-left:0}
+.heatmap-month-tag{font-size:8px;color:var(--text-muted);white-space:nowrap;overflow:hidden}
+
+@media(min-width:768px){
+  .content{max-width:900px;padding:60px 40px 80px}
+  .semana-cards{gap:10px}
+  .asignado-card{padding:36px 32px}
+  .stats-grid{gap:16px}
+  .stat-value{font-size:32px}
+  .heatmap-cell{width:13px;height:13px}
+  .heatmap-week{grid-template-rows:repeat(7,13px)}
+  .focus-btn{top:24px;right:24px;font-size:13px;padding:10px 20px}
+}
+</style>
+</head>
+<body>
+<button class="focus-btn" id="focusBtn" onclick="toggleFocus()">🕊️ Enfoque</button>
+<div class="content">
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <div class="nav-user">
+      <div class="nav-avatar" id="navAvatar">?</div>
+      <span id="navNombre">Cargando...</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" href="home.html">🏠 Home</a>
+      <a class="nav-link" href="personas.html">👥 Miembros</a>
+      <a class="nav-link" id="navTodos" href="todos.html" style="display:none">🙏 Todos</a>
+      <a class="nav-link active" href="seguimiento.html">📅 Seguimiento</a>
+      <a class="nav-link" href="mi-perfil.html">👤 Mi perfil</a>
+      <a class="nav-link" onclick="cerrarSesion()">Salir</a>
+    </div>
+  </div>
+
+  <h1 class="header-title">Mi Seguimiento 📅</h1>
+  <p class="header-sub">Registrá los días en que oraste por la persona que te tocó esta semana</p>
+
+  <!-- PERSONA ASIGNADA -->
+  <div class="asignado-card" id="asignadoCard">
+    <div class="skeleton" style="width:64px;height:64px;border-radius:50%;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div class="skeleton" style="height:14px;width:100px;margin-bottom:10px"></div>
+      <div class="skeleton" style="height:24px;width:160px"></div>
+    </div>
+  </div>
+
+  <!-- SEMANA -->
+  <span class="sec-label">Esta semana</span>
+  <div class="semana-cards" id="semanaCards">
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+    <div class="skeleton" style="height:90px"></div>
+  </div>
+
+  <!-- CALENDARIO MENSUAL -->
+  <div class="calendar-section">
+    <div class="calendar-header">
+      <button class="calendar-btn" onclick="mesAnterior()">←</button>
+      <div class="calendar-title" id="mesActual"></div>
+      <button class="calendar-btn" onclick="mesSiguiente()">→</button>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+
+  <!-- MAPA DE CALOR ANUAL -->
+  <div class="heatmap-section" id="heatmapSection">
+    <div class="heatmap-title">
+      <span>🔥 Constancia de Oración</span>
+      <span class="heatmap-year" id="heatmapYearLabel"></span>
+    </div>
+    <div id="heatmapContainer"></div>
+    <div class="heatmap-legend">
+      <span>Menos</span>
+      <div class="heatmap-legend-cell" style="background:rgba(255,255,255,0.06)"></div>
+      <div class="heatmap-legend-cell nivel-1"></div>
+      <div class="heatmap-legend-cell nivel-2"></div>
+      <div class="heatmap-legend-cell nivel-3"></div>
+      <div class="heatmap-legend-cell nivel-4"></div>
+      <span>Más</span>
+    </div>
+  </div>
+
+  <!-- ESTADÍSTICAS -->
+  <span class="sec-label">Mis estadísticas</span>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Esta semana</div>
+      <div class="stat-value" id="statSemana">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Este mes</div>
+      <div class="stat-value" id="statMes">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="statTotal">–</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="api.js"></script>
+<script>
+requireAuth();
+
+const diasCortos = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const meses      = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+let diasMarcados    = new Set();
+let personaAsignada = null;
+let mesView         = new Date().getMonth();
+let yearView        = new Date().getFullYear();
+let cargando        = false;
+let listaPersonasGlobal = [];
+let miIndiceGlobal  = -1;
+
+/* ---- INIT ---- */
+(async () => {
+  try {
+    // Mostrar foto desde localStorage inmediatamente (sin esperar API)
+    const usuarioLocal = getUsuario();
+    if (usuarioLocal) {
+      const avPrev = document.getElementById("navAvatar");
+      if (usuarioLocal.foto_url) {
+        avPrev.innerHTML = `<img src="${usuarioLocal.foto_url}" alt="${usuarioLocal.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      } else if (usuarioLocal.nombre) {
+        avPrev.textContent = usuarioLocal.nombre.charAt(0).toUpperCase();
+      }
+    }
+
+    const perfil = await usuarioApi.perfil();
+    // Actualizar localStorage con datos frescos
+    actualizarUsuarioLocal({ foto_url: perfil.foto_url, nombre: perfil.nombre });
+    const av = document.getElementById("navAvatar");
+    if (perfil.foto_url) {
+      av.innerHTML = `<img src="${perfil.foto_url}" alt="${perfil.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      av.textContent = perfil.nombre.charAt(0).toUpperCase();
+    }
+    document.getElementById("navNombre").textContent = perfil.nombre;
+
+    if (perfil.rol === "admin") {
+      const nt = document.getElementById("navTodos");
+      if (nt) nt.style.removeProperty("display");
+    }
+
+    const [seg, asig, todasP] = await Promise.all([
+      usuarioApi.seguimiento(),
+      usuarioApi.asignado(),
+      personas.listar(),
+    ]);
+
+    seg.forEach(f => {
+      const d = typeof f === "string" ? f.substring(0,10) : new Date(f).toISOString().substring(0,10);
+      diasMarcados.add(d);
+    });
+
+    personaAsignada = asig.persona;
+    listaPersonasGlobal = todasP.map(p => p.nombre);
+    miIndiceGlobal = listaPersonasGlobal.findIndex(
+      n => n.toLowerCase().trim() === (perfil.nombre || "").toLowerCase().trim()
+    );
+
+    renderAsignado();
+    renderSemana();
+    renderCalendario();
+    actualizarStats();
+    renderHeatmap();
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("semanaCards").innerHTML = `<p style="color:#ff6464;grid-column:1/-1;text-align:center">Error al cargar datos. Verificá tu conexión.</p>`;
+    document.getElementById("asignadoCard").innerHTML = `<p style="color:#ff6464">Error al cargar persona asignada.</p>`;
+  }
+})();
+
+/* ---- HELPERS — zona horaria Argentina ---- */
+function ahoraAR() {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+}
+function hoyStr() {
+  const h = ahoraAR();
+  return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`;
+}
+function fechaStr(fecha) {
+  return `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`;
+}
+function getLunesActual() {
+  const hoy = ahoraAR();
+  hoy.setHours(0,0,0,0);
+  const day = hoy.getDay();
+  const diff = hoy.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(hoy.getFullYear(), hoy.getMonth(), diff);
+}
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+/* ---- CONFETTI ---- */
+function lanzarConfetti(targetEl) {
+  const emojis = ["⭐","✨","🌟","💫","🙏","✝️","💛"];
+  const wrap = document.createElement("div");
+  wrap.className = "confetti-container";
+  targetEl.appendChild(wrap);
+  for (let i = 0; i < 14; i++) {
+    const star = document.createElement("span");
+    star.className = "confetti-star";
+    star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const leftPct = 10 + Math.random() * 80;
+    const ty = -(30 + Math.random() * 60) + "px";
+    const rot = (Math.random() * 360 - 180) + "deg";
+    star.style.cssText = `left:${leftPct}%;bottom:10px;--ty:${ty};--rot:${rot};animation-delay:${i*0.06}s;font-size:${12+Math.random()*10}px`;
+    wrap.appendChild(star);
+  }
+  setTimeout(() => wrap.remove(), 1800);
+}
+
+/* ---- PERSONA ASIGNADA ---- */
+function renderAsignado() {
+  const card = document.getElementById("asignadoCard");
+  if (!personaAsignada) {
+    card.innerHTML = `<p style="color:var(--text-muted);font-size:15px">No hay persona asignada esta semana</p>`;
+    return;
+  }
+  const avatarHTML = personaAsignada.foto_url
+    ? `<div class="asignado-avatar"><img src="${personaAsignada.foto_url}" alt="${personaAsignada.nombre}"></div>`
+    : `<div class="asignado-avatar">${personaAsignada.nombre.charAt(0)}</div>`;
+
+  card.innerHTML = `
+    ${avatarHTML}
+    <div class="asignado-info">
+      <div class="asignado-label">Orando por esta semana</div>
+      <div class="asignado-nombre">${personaAsignada.nombre}</div>
+      <div class="asignado-sub">
+        <a href="perfil.html?id=${personaAsignada.id}&nombre=${encodeURIComponent(personaAsignada.nombre)}" style="color:var(--accent);font-size:13px;text-decoration:none">
+          Ver sus motivos →
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+/* ---- SEMANA ---- */
+function renderSemana() {
+  const lunes = getLunesActual();
+  const hoy   = hoyStr();
+  const cont  = document.getElementById("semanaCards");
+  cont.innerHTML = "";
+
+  for (let i = 0; i < 7; i++) {
+    const fecha = new Date(lunes);
+    fecha.setDate(fecha.getDate() + i);
+    fecha.setHours(0,0,0,0);
+    const fStr    = fechaStr(fecha);
+    const esHoy   = fStr === hoy;
+    const esPasado = fStr < hoy;
+    const marcado  = diasMarcados.has(fStr);
+
+    const card = document.createElement("div");
+    card.className = "dia-card";
+    if (esHoy)             card.classList.add("es-hoy");
+    if (marcado)           card.classList.add("marcado");
+    if (esPasado && !marcado) card.classList.add("sin-marcar-pasado");
+    if (!esHoy && !esPasado)  card.classList.add("futuro");
+    if (esHoy) card.onclick = () => toggleHoy();
+
+    card.innerHTML = `
+      ${esHoy ? '<div class="hoy-label">Hoy</div>' : ''}
+      <div class="dia-nombre">${diasCortos[i]}</div>
+      <div class="dia-num">${fecha.getDate()}</div>
+      <div class="dia-check">${marcado ? '✓' : (esPasado && !esHoy ? '✕' : '')}</div>
+    `;
+    cont.appendChild(card);
+  }
+}
+
+/* ---- MARCAR HOY ---- */
+async function toggleHoy() {
+  if (cargando) return;
+  cargando = true;
+  try {
+    const res = await usuarioApi.marcarHoy();
+    const hoy = hoyStr();
+    if (res.marcado) {
+      diasMarcados.add(hoy);
+      showToast("¡Oración registrada! 🙏");
+      const card = document.getElementById("asignadoCard");
+      if (card) lanzarConfetti(card);
+    } else {
+      diasMarcados.delete(hoy);
+      showToast("Marca removida");
+    }
+    renderSemana();
+    renderCalendario();
+    actualizarStats();
+    renderHeatmap();
+  } catch (e) {
+    showToast("Error: " + e.message);
+  } finally {
+    cargando = false;
+  }
+}
+
+/* ---- ASIGNADO EN CALENDARIO ---- */
+function obtenerAsignadoCalendario(fecha) {
+  if (!listaPersonasGlobal.length || miIndiceGlobal === -1) return "";
+  const n = listaPersonasGlobal.length;
+  const f = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+  const day = f.getDay();
+  const diff = f.getDate() - day + (day === 0 ? -6 : 1);
+  const lunes = new Date(f.getFullYear(), f.getMonth(), diff);
+  const base = new Date(2026, 4, 11); // Semana que empieza el 11 de mayo 2026
+  const semanas = Math.max(0, Math.floor((lunes - base) / (7 * 24 * 60 * 60 * 1000)));
+  const idx = (miIndiceGlobal + semanas) % n;
+  const nombre = listaPersonasGlobal[idx] || "";
+  return nombre.length > 7 ? nombre.substring(0, 6) + "." : nombre;
+}
+
+/* ---- CALENDARIO ---- */
+function renderCalendario() {
+  const hoy = hoyStr();
+  document.getElementById("mesActual").textContent = `${meses[mesView]} ${yearView}`;
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
+  ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"].forEach(h => {
+    const el = document.createElement("div");
+    el.className = "calendar-day-header";
+    el.textContent = h;
+    grid.appendChild(el);
+  });
+  let primerDia = new Date(yearView, mesView, 1).getDay();
+  primerDia = primerDia === 0 ? 6 : primerDia - 1;
+  const diasEnMes  = new Date(yearView, mesView + 1, 0).getDate();
+  const diasAntMes = new Date(yearView, mesView, 0).getDate();
+  for (let i = primerDia - 1; i >= 0; i--) {
+    const el = document.createElement("div");
+    el.className = "calendar-day other-month";
+    el.innerHTML = `<span>${diasAntMes - i}</span>`;
+    grid.appendChild(el);
+  }
+  for (let dia = 1; dia <= diasEnMes; dia++) {
+    const fStr   = `${yearView}-${String(mesView+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+    const esHoy  = fStr === hoy;
+    const marcado = diasMarcados.has(fStr);
+    const esPast  = fStr < hoy;
+    const el = document.createElement("div");
+    el.className = "calendar-day";
+    if (esHoy)  { el.classList.add("today-cal"); el.onclick = () => toggleHoy(); }
+    if (marcado)  el.classList.add("marcado-cal");
+    if (esPast && !marcado && !esHoy) el.classList.add("past-unmarked");
+    const nombreCal = obtenerAsignadoCalendario(new Date(yearView, mesView, dia));
+    el.innerHTML = `<span>${dia}</span>${nombreCal ? `<span class="cal-asignado">${nombreCal}</span>` : ''}${marcado || esHoy ? '<span class="cal-dot"></span>' : ''}`;
+    grid.appendChild(el);
+  }
+  const total = primerDia + diasEnMes;
+  const restantes = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= restantes; i++) {
+    const el = document.createElement("div");
+    el.className = "calendar-day other-month";
+    el.innerHTML = `<span>${i}</span>`;
+    grid.appendChild(el);
+  }
+}
+
+function mesAnterior() {
+  mesView--;
+  if (mesView < 0) { mesView = 11; yearView--; }
+  renderCalendario();
+}
+function mesSiguiente() {
+  mesView++;
+  if (mesView > 11) { mesView = 0; yearView++; }
+  renderCalendario();
+}
+
+/* ---- ESTADÍSTICAS ---- */
+function actualizarStats() {
+  const lunes = getLunesActual();
+  let semana = 0;
+  for (let i = 0; i < 7; i++) {
+    const f = new Date(lunes);
+    f.setDate(f.getDate() + i);
+    if (diasMarcados.has(fechaStr(f))) semana++;
+  }
+  const hoy = ahoraAR();
+  let mes = 0;
+  const diasEnMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= diasEnMes; d++) {
+    const f = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if (diasMarcados.has(f)) mes++;
+  }
+  document.getElementById("statSemana").textContent = `${semana}/7`;
+  document.getElementById("statMes").textContent    = mes;
+  document.getElementById("statTotal").textContent  = diasMarcados.size;
+}
+
+
+/* ---- MODO ENFOQUE ---- */
+function toggleFocus() {
+  const enFocus = document.body.classList.toggle("modo-enfoque");
+  document.getElementById("focusBtn").textContent = enFocus ? "✕ Salir" : "🕊️ Enfoque";
+}
+
+/* ---- HEATMAP ANUAL ---- */
+function renderHeatmap() {
+  const hoy = ahoraAR();
+  const añoActual = hoy.getFullYear();
+  document.getElementById("heatmapYearLabel").textContent = añoActual;
+
+  const primerDiaAño = new Date(añoActual, 0, 1);
+  // Empezar desde el lunes de la semana del 1 de enero
+  const inicioSemana = new Date(primerDiaAño);
+  const dow = primerDiaAño.getDay();
+  const offset = dow === 0 ? -6 : 1 - dow;
+  inicioSemana.setDate(inicioSemana.getDate() + offset);
+
+  const container = document.getElementById("heatmapContainer");
+  const SEMANAS = 53;
+  const DIAS_SEMANA = ["L","M","M","J","V","S","D"];
+
+  let html = '<div style="display:flex;gap:2px;align-items:flex-start">';
+  // Labels de día
+  html += '<div style="display:grid;grid-template-rows:repeat(7,10px);gap:2px;margin-right:4px;margin-top:16px">';
+  DIAS_SEMANA.forEach((d,i) => {
+    html += `<div style="font-size:8px;color:var(--text-muted);height:10px;line-height:10px;text-align:right;opacity:${i%2===0?'0.7':'0'}">${d}</div>`;
+  });
+  html += '</div>';
+
+  // Columnas de semanas
+  html += '<div style="display:flex;flex-direction:column;overflow-x:auto;flex:1">';
+  
+  // Month labels
+  html += '<div style="display:flex;gap:2px;margin-bottom:4px">';
+  let currentMonth = -1;
+  let monthPositions = [];
+  for (let w = 0; w < SEMANAS; w++) {
+    const fechaSemana = new Date(inicioSemana);
+    fechaSemana.setDate(fechaSemana.getDate() + w * 7);
+    const mes = fechaSemana.getMonth();
+    if (mes !== currentMonth && fechaSemana.getFullYear() === añoActual) {
+      monthPositions.push({ week: w, mes });
+      currentMonth = mes;
+    }
+  }
+  const mesesCortos = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  let labelMap = {};
+  monthPositions.forEach(mp => { labelMap[mp.week] = mesesCortos[mp.mes]; });
+  for (let w = 0; w < SEMANAS; w++) {
+    html += `<div style="width:10px;font-size:8px;color:var(--text-muted);white-space:nowrap;overflow:visible">${labelMap[w] || ''}</div>`;
+  }
+  html += '</div>';
+
+  // Cells
+  html += '<div style="display:flex;gap:2px">';
+  const hoyStr2 = fechaStr(hoy);
+  for (let w = 0; w < SEMANAS; w++) {
+    html += '<div style="display:grid;grid-template-rows:repeat(7,10px);gap:2px">';
+    for (let d = 0; d < 7; d++) {
+      const fecha = new Date(inicioSemana);
+      fecha.setDate(fecha.getDate() + w * 7 + d);
+      const fs = fechaStr(fecha);
+      const esteAño = fecha.getFullYear() === añoActual;
+      const esHoy2 = fs === hoyStr2;
+      const esFuturo = fs > hoyStr2;
+      let cls = "heatmap-cell";
+      if (esHoy2) cls += " hoy-cell";
+      if (esFuturo || !esteAño) cls += " futuro-cell";
+      else if (diasMarcados.has(fs)) cls += " nivel-4";
+      const title = esteAño ? `${fecha.getDate()}/${fecha.getMonth()+1}: ${diasMarcados.has(fs) ? 'Oré ✓' : (esFuturo ? '' : 'Sin registro')}` : '';
+      html += `<div class="${cls}" title="${title}"></div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div></div></div>';
+  container.innerHTML = html;
+}
+
+</script>
+</body>
+</html>
