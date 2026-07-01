@@ -1,0 +1,5 @@
+# Cosas temporales de Visual Studio que faltaban
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
